@@ -25,6 +25,11 @@ model = ChatOpenAI(
     max_tokens=1024,
 )
 
+config = {
+    "configurable": {
+        "thread_id": "pranay-session-1"
+    }
+}
 
 agent = create_agent(
     model=model,
@@ -68,6 +73,7 @@ result = agent.invoke(
             )
         ]
     },
+    config=config,
 )
 
 print(result["messages"][-1].content)
