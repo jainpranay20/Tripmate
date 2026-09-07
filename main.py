@@ -1,3 +1,5 @@
+import uuid
+
 from database import setup_database
 from agent import agent
 
@@ -10,7 +12,7 @@ def main():
     # One conversation/thread
     config = {
         "configurable": {
-            "thread_id": "user-session-1"
+            "thread_id": f"user-session-{uuid.uuid4()}"
         }
     }
 
