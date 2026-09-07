@@ -1,18 +1,18 @@
 import os
 
 from dotenv import load_dotenv
+load_dotenv()
+
 from langchain_openai import ChatOpenAI
 from langchain.agents import create_agent
 
-from tools import get_weather
+from tools import (
+    get_weather,
+    tavily_search,
+)
 
 
-load_dotenv()
 
-
-# -----------------------------------------
-# OpenRouter model
-# -----------------------------------------
 
 model = ChatOpenAI(
     model="openai/gpt-5-mini",
@@ -22,41 +22,47 @@ model = ChatOpenAI(
 )
 
 
-
-# -----------------------------------------
-# Create agent
-# -----------------------------------------
-
 agent = create_agent(
     model=model,
     tools=[
         get_weather,
+        tavily_search,
     ],
     system_prompt="""
-    You are TripMate, a helpful travel assistant.
+You are TripMate, a helpful travel assistant.
 
-    When the user asks for current weather,
-    always use the get_weather tool.
+Available tools:
 
-    Never guess current weather.
+1. get_weather
+   Use for current weather.
 
-    Be friendly and concise.
+2. tavily_search
+   Use for current information from the internet.
+
+Never invent current information when a tool
+can provide it.
+
+Be friendly and concise.
 """,
 )
 
 
-# -----------------------------------------
-# Ask the agent
-# -----------------------------------------
+result = agent.invoke(
+    {
+        "messages": [
+            (
+                "user",
+                """
+                I'm planning a trip to Bali.
 
-result = agent.invoke({
-    "messages": [
-        {
-            "role": "user",
-            "content": "What's the weather in Bengaluru right now?"
-        }
-    ]
-})
+                What's the current weather there?
+                Also tell me three interesting things
+                I can do there.
+                """
+            )
+        ]
+    }
+)
 
 
 print(result["messages"][-1].content)
