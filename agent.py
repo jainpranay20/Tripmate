@@ -1,7 +1,7 @@
 from langchain.agents import create_agent
 from langchain.agents.structured_output import ToolStrategy
 
-from memory import checkpointer
+from memory import checkpointer, travel_store
 from model import model
 from schemas import TripRequest
 from tools import (
@@ -9,6 +9,8 @@ from tools import (
     tavily_search,
     save_trip,
     get_saved_trips,
+    save_travel_style,
+    recall_travel_style,
 )
 
 
@@ -23,6 +25,8 @@ agent = create_agent(
         tavily_search,
         save_trip,
         get_saved_trips,
+        save_travel_style,
+        recall_travel_style,
     ],
     system_prompt="""
 You are TripMate, a helpful travel assistant.
@@ -54,4 +58,5 @@ Rules:
 """,
     response_format=ToolStrategy(TripRequest),
     checkpointer=checkpointer,
+    store=travel_store,
 )

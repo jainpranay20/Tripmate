@@ -1,6 +1,6 @@
 import requests
 
-from langchain.tools import tool
+from langchain.tools import ToolRuntime, tool
 from langchain_tavily import TavilySearch
 from database import create_trip, get_trips
 from database import setup_database
@@ -102,6 +102,41 @@ def get_saved_trips(user_id: str) -> str:
         )
 
     return "\n".join(results)
+
+
+@tool
+def save_travel_style(
+    user_id: str,
+    style: str,
+    runtime: ToolRuntime,
+) -> str:
+    """Save a user's preferred travel style for future conversations."""
+
+    runtime.store.put(
+        (user_id, "preferences"),
+        "travel_style",
+        {"value": style},
+    )
+
+    return f"Saved your travel preference: {style}."
+
+
+@tool
+def recall_travel_style(
+    user_id: str,
+    runtime: ToolRuntime,
+) -> str:
+    """Retrieve a user's previously saved travel style."""
+
+    result = runtime.store.get(
+        (user_id, "preferences"),
+        "travel_style",
+    )
+
+    if not result:
+        return "No travel preference saved."
+
+    return result.value["value"]
 
 
 tavily_search = TavilySearch(
