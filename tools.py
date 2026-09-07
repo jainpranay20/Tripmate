@@ -62,9 +62,3 @@ def get_weather(city: str) -> str:
         f"{temperature}°C, "
         f"wind speed {wind_speed} km/h."
     )
-if __name__ == "__main__":
-    print(
-        get_weather.invoke(
-            {"city": "Bengaluru"}
-        )
-    )
