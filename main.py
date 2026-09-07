@@ -5,6 +5,8 @@ load_dotenv()
 
 from langchain_openai import ChatOpenAI
 from langchain.agents import create_agent
+from langgraph.checkpoint.memory import InMemorySaver
+checkpointer = InMemorySaver()
 
 from tools import (
     get_weather,
@@ -41,6 +43,7 @@ agent = create_agent(
         - Search the web.
         - Save trips.
         - Retrieve saved trips.
+        - Remember information from the current conversation.
 
         Rules:
 
@@ -50,7 +53,9 @@ agent = create_agent(
         4. Never invent database information.
         5. Ask for missing information when necessary.
         6. Be friendly and concise.
+        7. Use tools whenever current information or database information is required.
         """,
+    checkpointer=checkpointer,
 )
 
 
@@ -59,15 +64,10 @@ result = agent.invoke(
         "messages": [
             (
                 "user",
-                """
-                My user ID is rohan_01.
-
-                Save my trip to Bali from
-                2026-10-10 to 2026-10-15.
-                """
+                "My user ID is pranay. Show me my saved trips."
             )
         ]
-    }
+    },
 )
 
 print(result["messages"][-1].content)
