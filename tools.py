@@ -1,15 +1,12 @@
 import requests
 
 from langchain.tools import tool
+from langchain_tavily import TavilySearch
 
 
 @tool
 def get_weather(city: str) -> str:
     """Get the current weather for a city."""
-
-    # ------------------------------------------------
-    # 1. Convert city name -> latitude/longitude
-    # ------------------------------------------------
 
     geo_response = requests.get(
         "https://geocoding-api.open-meteo.com/v1/search",
@@ -31,18 +28,11 @@ def get_weather(city: str) -> str:
 
     location = geo_data["results"][0]
 
-    latitude = location["latitude"]
-    longitude = location["longitude"]
-
-    # ------------------------------------------------
-    # 2. Get current weather
-    # ------------------------------------------------
-
     weather_response = requests.get(
         "https://api.open-meteo.com/v1/forecast",
         params={
-            "latitude": latitude,
-            "longitude": longitude,
+            "latitude": location["latitude"],
+            "longitude": location["longitude"],
             "current": "temperature_2m,wind_speed_10m",
         },
         timeout=10,
@@ -54,11 +44,14 @@ def get_weather(city: str) -> str:
 
     current = weather_data["current"]
 
-    temperature = current["temperature_2m"]
-    wind_speed = current["wind_speed_10m"]
-
     return (
         f"Current weather in {location['name']}: "
-        f"{temperature}°C, "
-        f"wind speed {wind_speed} km/h."
+        f"{current['temperature_2m']}°C, "
+        f"wind speed {current['wind_speed_10m']} km/h."
     )
+
+
+tavily_search = TavilySearch(
+    max_results=5,
+    topic="general",
+)
