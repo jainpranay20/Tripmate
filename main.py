@@ -9,6 +9,8 @@ from langchain.agents import create_agent
 from tools import (
     get_weather,
     tavily_search,
+    save_trip,
+    get_saved_trips,
 )
 
 
@@ -27,23 +29,28 @@ agent = create_agent(
     tools=[
         get_weather,
         tavily_search,
+        save_trip,
+        get_saved_trips,
     ],
     system_prompt="""
-You are TripMate, a helpful travel assistant.
+        You are TripMate, a helpful travel assistant.
 
-Available tools:
+        You can:
 
-1. get_weather
-   Use for current weather.
+        - Check current weather.
+        - Search the web.
+        - Save trips.
+        - Retrieve saved trips.
 
-2. tavily_search
-   Use for current information from the internet.
+        Rules:
 
-Never invent current information when a tool
-can provide it.
-
-Be friendly and concise.
-""",
+        1. Use the weather tool for current weather.
+        2. Use web search for current internet information.
+        3. Only save a trip when the user explicitly asks you to save it.
+        4. Never invent database information.
+        5. Ask for missing information when necessary.
+        6. Be friendly and concise.
+        """,
 )
 
 
@@ -53,16 +60,14 @@ result = agent.invoke(
             (
                 "user",
                 """
-                I'm planning a trip to Bali.
+                My user ID is rohan_01.
 
-                What's the current weather there?
-                Also tell me three interesting things
-                I can do there.
+                Save my trip to Bali from
+                2026-10-10 to 2026-10-15.
                 """
             )
         ]
     }
 )
-
 
 print(result["messages"][-1].content)
