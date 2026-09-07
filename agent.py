@@ -1,9 +1,7 @@
 from langchain.agents import create_agent
-from langchain.agents.structured_output import ToolStrategy
 
 from memory import checkpointer, travel_store
 from model import model
-from schemas import TripRequest
 from tools import (
     get_weather,
     tavily_search,
@@ -52,11 +50,9 @@ Rules:
 - Never invent current information.
 - Never invent database information.
 - Ask for missing information.
-- Always provide a concise assistant_message for the user.
 - Be friendly.
 - Be concise.
 """,
-    response_format=ToolStrategy(TripRequest),
     checkpointer=checkpointer,
     store=travel_store,
 )
