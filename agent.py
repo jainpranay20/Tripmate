@@ -1,33 +1,15 @@
-import os
-
-from dotenv import load_dotenv
-
-load_dotenv()
-
-from langchain_openai import ChatOpenAI
 from langchain.agents import create_agent
-from langgraph.checkpoint.memory import InMemorySaver
+from langchain.agents.structured_output import ToolStrategy
 
+from memory import checkpointer
+from model import model
+from schemas import TripRequest
 from tools import (
     get_weather,
     tavily_search,
     save_trip,
     get_saved_trips,
 )
-
-model = ChatOpenAI(
-    model="openai/gpt-5-mini",
-    api_key=os.environ["OPENROUTER_API_KEY"],
-    base_url="https://openrouter.ai/api/v1",
-    max_tokens=512,
-)
-
-
-# ==================================================
-# Conversation memory
-# ==================================================
-
-checkpointer = InMemorySaver()
 
 
 # ==================================================
@@ -66,8 +48,10 @@ Rules:
 - Never invent current information.
 - Never invent database information.
 - Ask for missing information.
+- Always provide a concise assistant_message for the user.
 - Be friendly.
 - Be concise.
 """,
+    response_format=ToolStrategy(TripRequest),
     checkpointer=checkpointer,
 )

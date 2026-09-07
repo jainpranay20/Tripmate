@@ -11,9 +11,13 @@ class TripRequest(BaseModel):
     )
 
     intent: Literal[
+        "new_trip",
         "modify_trip",
         "cancel_trip",
         "view_trips",
+        "weather",
+        "search",
+        "general",
     ] = Field(
         description="What the user wants to do."
     )

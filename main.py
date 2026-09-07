@@ -40,9 +40,13 @@ def main():
             config=config,
         )
 
-        response = result["messages"][-1].content
+        structured = result.get("structured_response")
 
-        print(f"\nTripMate: {response}\n")
+        if structured is not None:
+            print(f"\nTripMate: {structured.assistant_message}\n")
+            print(f"Request details: {structured.model_dump(exclude_none=True)}\n")
+        else:
+            print(f"\nTripMate: {result['messages'][-1].content}\n")
 
 
 if __name__ == "__main__":
